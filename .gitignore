@@ -11,40 +11,46 @@ build/
 venv/
 .venv/
 env/
+ENV/
 
-# ML Models (large files — store in cloud/DVC)
+# ML Models & Large Files (Important!)
 ml_pipeline/models/**/*.pt
 ml_pipeline/models/**/*.joblib
 ml_pipeline/models/**/*.pkl
 ml_pipeline/models/**/best_model/
+ml_pipeline/models/**/tfidf_lr_pipeline.joblib
+*.bin
+*.pth
 
-# Data (raw data should be re-downloadable)
+# Raw Dataset
 ml_pipeline/data/raw/
 
-# MLflow
-mlruns/
+# Temporary Colab files
+content/
+drive/
+
+# Logs
+*.log
+logs/
 
 # Secrets
 .env
+.env.example
 
 # IDE
 .idea/
 .vscode/
 *.swp
 
-# Node / Frontend
-node_modules/
-frontend/dist/
-frontend/build/
+# Jupyter/Colab
+.ipynb_checkpoints/
+*.ipynb
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Coverage
+# Testing
+.pytest_cache/
 .coverage
 htmlcov/
