@@ -21,6 +21,7 @@ from transformers import (
 
 import sys
 sys.path.append(str(Path(__file__).parents[2]))
+PROJECT_ROOT = Path(__file__).parents[2].resolve()
 from ml_pipeline.data.preprocessor import TextPreprocessor
 
 CATEGORIES = ["World", "Sports", "Business", "Technology"]
@@ -132,21 +133,50 @@ class EnsemblePredictor:
     # ── Loaders (return None if model not yet trained) ────────────────────────
 
     def _load_baseline(self):
-        path = Path("ml_pipeline/models/baseline/tfidf_lr_pipeline.joblib")
+        path = PROJECT_ROOT /"ml_pipeline/models/baseline/tfidf_lr_pipeline.joblib"
         if path.exists():
             return joblib.load(path)
         print(f"⚠️  Baseline model not found at {path}  (run train_baseline.py first)")
         return None
 
+    # def _load_lstm(self):
+    #     from ml_pipeline.training.train_lstm import BiLSTMClassifier, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, DROPOUT, NUM_CLASSES
+    #     pt_path   = PROJECT_ROOT /"ml_pipeline/models/lstm/lstm_best.pt"
+    #     vocab_path = PROJECT_ROOT /"ml_pipeline/models/lstm/vocab.pkl"
+    #     if not pt_path.exists():
+    #         print(f"⚠️  LSTM model not found  (run train_lstm.py first)")
+    #         return None
+    #     with open(vocab_path, "rb") as f:
+    #         vocab = pickle.load(f)
+    #     model = BiLSTMClassifier(
+    #         vocab_size=len(vocab.word2idx),
+    #         embed_dim=EMBED_DIM,
+    #         hidden_dim=HIDDEN_DIM,
+    #         num_layers=NUM_LAYERS,
+    #         num_classes=NUM_CLASSES,
+    #         dropout=DROPOUT,
+    #     ).to(self.device)
+    #     model.load_state_dict(torch.load(pt_path, map_location=self.device))
+    #     return model, vocab
     def _load_lstm(self):
         from ml_pipeline.training.train_lstm import BiLSTMClassifier, EMBED_DIM, HIDDEN_DIM, NUM_LAYERS, DROPOUT, NUM_CLASSES
-        pt_path   = Path("ml_pipeline/models/lstm/lstm_best.pt")
-        vocab_path = Path("ml_pipeline/models/lstm/vocab.pkl")
-        if not pt_path.exists():
-            print(f"⚠️  LSTM model not found  (run train_lstm.py first)")
+        
+        pt_path    = PROJECT_ROOT / "ml_pipeline/models/lstm/lstm_best.pt"
+        vocab_path = PROJECT_ROOT / "ml_pipeline/models/lstm/vocab.pkl"
+        
+        if not pt_path.exists() or not vocab_path.exists():
+            print(f"⚠️  LSTM model not found (run train_lstm.py first)")
             return None
+            
+        # === QUICK FIX FOR PICKLE VOCABULARY ERROR ===
+        import sys
+        from ml_pipeline.training.train_lstm import Vocabulary   # Import the class from where it was defined
+        sys.modules['__main__'].Vocabulary = Vocabulary
+        # =============================================
+
         with open(vocab_path, "rb") as f:
             vocab = pickle.load(f)
+            
         model = BiLSTMClassifier(
             vocab_size=len(vocab.word2idx),
             embed_dim=EMBED_DIM,
@@ -155,11 +185,12 @@ class EnsemblePredictor:
             num_classes=NUM_CLASSES,
             dropout=DROPOUT,
         ).to(self.device)
+        
         model.load_state_dict(torch.load(pt_path, map_location=self.device))
         return model, vocab
 
     def _load_distilbert(self):
-        path = Path("ml_pipeline/models/distilbert/best_model")
+        path = PROJECT_ROOT /"ml_pipeline/models/distilbert/best_model"
         if not path.exists():
             print(f"⚠️  DistilBERT model not found  (run train_distilbert.py first)")
             return None

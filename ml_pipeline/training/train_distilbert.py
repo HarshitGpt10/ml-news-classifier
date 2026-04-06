@@ -34,8 +34,11 @@ NUM_EPOCHS  = 3
 LR          = 2e-5
 NUM_CLASSES = 4
 
-DATA_DIR   = Path("ml_pipeline/data/raw")
-OUTPUT_DIR = Path("ml_pipeline/models/distilbert")
+# DATA_DIR   = Path("ml_pipeline/data/raw")
+# OUTPUT_DIR = Path("ml_pipeline/models/distilbert")
+PROJECT_ROOT = Path(__file__).parents[2].resolve()
+DATA_DIR     = PROJECT_ROOT / "ml_pipeline" / "data" / "raw"
+OUTPUT_DIR   = PROJECT_ROOT / "ml_pipeline" / "models" / "distilbert"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 CATEGORIES = ["World", "Sports", "Business", "Technology"]

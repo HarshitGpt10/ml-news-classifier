@@ -1,0 +1,5 @@
+{
+  "model": "DistilBERT fine-tuned",
+  "test_accuracy": 0.9429,
+  "trained_at": "2026-04-05T10:36:15.488207"
+}
